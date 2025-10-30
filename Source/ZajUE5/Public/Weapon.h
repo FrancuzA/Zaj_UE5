@@ -1,8 +1,10 @@
 #pragma once
-#include "Weapon.generated.h"
+
+
+
 #include "CoreMinimal.h"
 #include "Item.h"
-
+#include "Weapon.generated.h"
 
 UCLASS()
 class ZAJUE5_API AWeapon : public AItem

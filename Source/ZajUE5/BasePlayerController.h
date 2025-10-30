@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "ABasePlayerController.generated.h"
+#include "BasePlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ZAJUE5_API AABasePlayerController : public APlayerController
+class ZAJUE5_API ABasePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:

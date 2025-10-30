@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "ABaseCharacter.generated.h"
+#include "BaseCharacter.generated.h"
 
 UCLASS()
-class ZAJUE5_API AABaseCharacter : public ACharacter
+class ZAJUE5_API ABaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AABaseCharacter();
+	ABaseCharacter();
 
 protected:
 	// Called when the game starts or when spawned

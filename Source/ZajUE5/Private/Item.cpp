@@ -1,6 +1,7 @@
 #include "Item.h"
+#include "InteractionComponent.h"      // komponent
 #include "Components/StaticMeshComponent.h"
-#include "InteractionComponent.h"
+
 
 AItem::AItem()
 {
@@ -14,12 +15,9 @@ AItem::AItem()
 	InteractionComp = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractionComp"));
 }
 
-void AItem::Interact(ABasePlayerCharacter* Interactor)
+void AItem::Interact_Implementation(ABasePlayerCharacter* Interactor)
 {
-	if (Interactor)
-	{
-		PickUp(Interactor);
-	}
+
 }
 
 void AItem::PickUp(ABasePlayerCharacter* ByCharacter)

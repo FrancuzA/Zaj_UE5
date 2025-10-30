@@ -3,15 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ABaseCharacter.h"
-#include "ABasePlayerCharacter.generated.h"
-#include "AWeapon.h"
+#include "BaseCharacter.h"
+#include "BasePlayerCharacter.generated.h"
 
+
+class AWeapon;
 /**
  * 
  */
 UCLASS()
-class ZAJUE5_API AABasePlayerCharacter : public AABaseCharacter
+class ZAJUE5_API ABasePlayerCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 public:

@@ -9,6 +9,8 @@ class ZAJUE5_API UInteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+	UInteractionComponent();
+
 public:
 	// Tekst wyświetlany przy interakcji (np. w UI)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")

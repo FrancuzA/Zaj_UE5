@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ABasePlayerController.h"
+#include "BasePlayerController.h"
+#include "BasePlayerCharacter.h"
 void ABasePlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();

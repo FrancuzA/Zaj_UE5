@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "AMasterGameMode.generated.h"
+#include "MasterGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ZAJUE5_API AAMasterGameMode : public AGameModeBase
+class ZAJUE5_API AMasterGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	

@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ABasePlayerCharacter.h"
-
+#include "BasePlayerCharacter.h"
+#include "Weapon.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Camera/CameraComponent.h"
 
@@ -48,23 +48,23 @@ void ABasePlayerCharacter::Equip(AWeapon* WeaponToEquip)
 
 AActor* ABasePlayerCharacter::FindInteractable() const
 {
-	UCameraComponent* Cam = Cast<UCameraComponent>(GetFollowCamera());
-	if (!Cam) return nullptr;
+	////UCameraComponent* Cam = Cast<UCameraComponent>(GetFollowCamera());
+	////if (!Cam) return nullptr;
 
-	FVector Start = Cam->GetComponentLocation();
-	FVector End = Start + Cam->GetForwardVector() * 200.0f;
+	//FVector Start = Cam->GetComponentLocation();
+	//FVector End = Start + Cam->GetForwardVector() * 200.0f;
 
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
+	//FCollisionQueryParams Params;
+	//Params.AddIgnoredActor(this);
 
-	FHitResult Hit;
-	if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
-	{
-		AActor* HitActor = Hit.GetActor();
-		if (HitActor && HitActor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
-		{
-			return HitActor;
-		}
-	}
+	//FHitResult Hit;
+	//if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
+	//{
+	//	AActor* HitActor = Hit.GetActor();
+	//	if (HitActor && HitActor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+	//	{
+	//		return HitActor;
+	//	}
+	//}
 	return nullptr;
 }

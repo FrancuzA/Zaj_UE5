@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ABaseCharacter.h"
-#include "ABaseEnemyCharacter.generated.h"
+#include "BaseCharacter.h"
+#include "BaseEnemyCharacter.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ZAJUE5_API AABaseEnemyCharacter : public AABaseCharacter
+class ZAJUE5_API ABaseEnemyCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 	
