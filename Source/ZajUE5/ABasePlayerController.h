@@ -13,5 +13,10 @@ UCLASS()
 class ZAJUE5_API AABasePlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void SetupInputComponent() override;
+
+private:
+	void OnInteract();
+	void OnAttack();
 };
