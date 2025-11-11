@@ -13,16 +13,20 @@ void ABasePlayerController::SetupInputComponent()
 
 void ABasePlayerController::OnInteract()
 {
-	if (ABasePlayerCharacter* PC = Cast<ABasePlayerCharacter>(GetPawn()))
-	{
-		PC->OnInteract();
-	}
+   
+    ABasePlayerCharacter* PlayerCharacter = Cast<ABasePlayerCharacter>(GetPawn());
+    if (PlayerCharacter)
+    {
+        PlayerCharacter->Interact(); 
+    }
 }
 
 void ABasePlayerController::OnAttack()
 {
-	if (ABasePlayerCharacter* PC = Cast<ABasePlayerCharacter>(GetPawn()))
-	{
-		PC->OnAttack();
-	}
+    ABasePlayerCharacter* PlayerCharacter = Cast<ABasePlayerCharacter>(GetPawn());
+    if (PlayerCharacter)
+    {
+       
+        PlayerCharacter->Attack();
+    }
 }

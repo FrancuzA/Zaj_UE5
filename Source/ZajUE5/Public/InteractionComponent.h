@@ -2,25 +2,33 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "BasePlayerCharacter.h"
+#include "InteractionInterface.h"
 #include "InteractionComponent.generated.h"
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+class UKismetSystemLibrary;
+UCLASS()
 class ZAJUE5_API UInteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+public:
 	UInteractionComponent();
 
-public:
-	// Tekst wyświetlany przy interakcji (np. w UI)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
-	FText InteractionText = FText::FromString("Interact");
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	UPROPERTY(EditDefaultsOnly)
+	TArray<AActor*> IgnoreActors;
 
-	// Maksymalna odległość interakcji (cm)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
-	float InteractionRange = 200.0f;
+	UPROPERTY()
+	float TraceSphereRadius = 10.f;
 
-	// Maksymalny kąt od osi wzroku (0 = tylko prosto przed sobą)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
-	float InteractionAngle = 45.0f;
+	void TryInteract();
+
+protected:
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void SphereTrace(FHitResult& SphereHit);
+
+
 };

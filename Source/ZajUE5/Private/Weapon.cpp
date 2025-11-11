@@ -1,11 +1,26 @@
 #include "Weapon.h"
-#include "BasePlayerCharacter.h" // Musi istnieć!
+#include "BaseCharacter.h" 
 
-void AWeapon::PickUp(ABasePlayerCharacter* ByCharacter)
+
+void AWeapon::Interact_Implementation(AActor* OuterActor) 
 {
-	if (ByCharacter)
+	Super::Interact_Implementation(OuterActor);
+	Equip(OuterActor);
+}
+
+void AWeapon::Equip(AActor* OuterActor)
+{
+	ABaseCharacter* BaseChar = Cast<ABaseCharacter>(OuterActor);
+	if (BaseChar)
 	{
-		ByCharacter->Equip(this);
-		// Nie niszczymy tu – broń zostanie przeniesiona do socketa
+		AttachToSocket(BaseChar->GetMesh(), MainSocketName);
+		BaseChar->SetCurrentWeapon(this);
 	}
+}
+
+void AWeapon:: AttachToSocket(USceneComponent* InParent, const FName& InSocketName)
+{
+	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+	TransformRules.ScaleRule = EAttachmentRule::KeepWorld;
+	RootComponent->AttachToComponent(InParent, TransformRules, InSocketName);
 }

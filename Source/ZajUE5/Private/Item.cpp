@@ -15,9 +15,15 @@ AItem::AItem()
 	InteractionComp = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractionComp"));
 }
 
-void AItem::Interact_Implementation(ABasePlayerCharacter* Interactor)
+void AItem::BeginPlay()
 {
+	Super::BeginPlay();
+}
 
+void AItem::Interact_Implementation(AActor* OuterActor)
+{
+	ItemMesh->SetSimulatePhysics(false);
+	SetOwner(OuterActor);
 }
 
 void AItem::PickUp(ABasePlayerCharacter* ByCharacter)

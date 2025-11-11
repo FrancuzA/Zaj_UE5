@@ -9,6 +9,9 @@
 class ABasePlayerCharacter;
 class UInteractionComponent;
 class UStaticMeshComponent;
+class USkeletalMeshComponent;
+class USphereComponent;
+class UCapsuleComponent;
 
 UCLASS()
 class ZAJUE5_API AItem : public AActor, public IInteractionInterface
@@ -18,8 +21,6 @@ class ZAJUE5_API AItem : public AActor, public IInteractionInterface
 public:
 	AItem();
 
-	// Implementacja interfejsu
-	 void Interact_Implementation(ABasePlayerCharacter* Interactor);
 
 	// Wirtualna funkcja do podnoszenia – może być nadpisana
 	virtual void PickUp(ABasePlayerCharacter* ByCharacter);
@@ -29,8 +30,18 @@ public:
 	class UStaticMeshComponent* MeshComp;
 
 protected:
-	// Komponent interakcji – oznacza, że przedmiot jest interaktywny
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class UInteractionComponent* InteractionComp;
+	virtual void BeginPlay() override;
+	virtual void Interact_Implementation(AActor* OuterActor);
 
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* ItemMesh;
+	
+	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* ItemSkeletalMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* Sphere;
+
+	UPROPERTY(VisibleAnywhere)
+	UInteractionComponent* InteractionComp; 
 };

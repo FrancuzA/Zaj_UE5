@@ -11,7 +11,15 @@ class ZAJUE5_API AWeapon : public AItem
 {
 	GENERATED_BODY()
 
+
+protected:
+	virtual void Interact_Implementation(AActor* OuterActor) override;
+	
+
+	void AttachToSocket(USceneComponent* InParent, const FName& InSocketName);
+	void Equip(AActor* OuterActor);
 public:
-	// Nadpisana wersja PickUp – wywołuje Equip na postaci
-	virtual void PickUp(ABasePlayerCharacter* ByCharacter) override;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Weapon Properties")
+	FName MainSocketName = FName("hand_rSocket");
 };
