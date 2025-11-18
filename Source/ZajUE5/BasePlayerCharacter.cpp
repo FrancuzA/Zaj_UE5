@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "BasePlayerCharacter.h"
 #include "Weapon.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -15,128 +12,138 @@
 
 ABasePlayerCharacter::ABasePlayerCharacter()
 {
-	// Utwórz komponent interakcji
-	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractionComponent"));
+    // Utwórz komponent interakcji
+    InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractionComponent"));
 
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.f,400.f,0.f);
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
+    GetCharacterMovement()->bOrientRotationToMovement = false;
+    bUseControllerRotationPitch = true;
+    bUseControllerRotationYaw = true;
+    bUseControllerRotationRoll = false;
 
-	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+    GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
-	// Utwórz boom kamery
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(GetRootComponent());
-	CameraBoom->TargetArmLength =300.0f;
-	// Utwórz kamerę widoku
-	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
-	ViewCamera->SetupAttachment(CameraBoom);
+    CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+    CameraBoom->SetupAttachment(GetRootComponent());
+    CameraBoom->TargetArmLength = 150.f;
+    CameraBoom->bUsePawnControlRotation = true;
+    ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
+    ViewCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+    ViewCamera->bUsePawnControlRotation = false;
+    
 }
 
 
 void ABasePlayerCharacter::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
-	if (ABasePlayerController* PC = Cast<ABasePlayerController>(GetController()))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
-		{
-			if (MappingContext)
-			{
-				Subsystem->AddMappingContext(MappingContext,0);
-			}
-		}
-	}
+    if (ABasePlayerController* PC = Cast<ABasePlayerController>(GetController()))
+    {
+        if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+        {
+            if (MappingContext)
+            {
+                Subsystem->AddMappingContext(MappingContext, 0);
+            }
+        }
+    }
 }
 
 void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	if (UEnhancedInputComponent* EIC = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::Move);
-		EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::Look);
-		EIC->BindAction(InteractAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::Interact);
-		EIC->BindAction(AttackAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::Attack);
-	}
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
+    if (UEnhancedInputComponent* EIC = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+    {
+        EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::Move);
+        EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::Look);
+        EIC->BindAction(InteractAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::Interact);
+        EIC->BindAction(AttackAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::Attack);
+        EIC->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+    }
 }
 
 void ABasePlayerCharacter::Look(const FInputActionValue& Value)
 {
-	FVector2D AxisValue = Value.Get<FVector2D>();
-	if (Controller)
-	{
-		AddControllerYawInput(AxisValue.X);
-		AddControllerPitchInput(AxisValue.Y);
-	}
+    FVector2D AxisValue = Value.Get<FVector2D>();
+    if (Controller)
+    {
+        AddControllerYawInput(AxisValue.X);
+        AddControllerPitchInput(-AxisValue.Y);
+    }
 }
 
 FVector ABasePlayerCharacter::GetCameraLocation()
 {
-	return ViewCamera ? ViewCamera->GetComponentLocation() : FVector::ZeroVector;
+    return ViewCamera ? ViewCamera->GetComponentLocation() : FVector::ZeroVector;
 }
 
 FVector ABasePlayerCharacter::GetCameraForwardVector()
 {
-	return ViewCamera ? ViewCamera->GetForwardVector() : FVector::ForwardVector;
+    return ViewCamera ? ViewCamera->GetForwardVector() : FVector::ForwardVector;
 }
 
 void ABasePlayerCharacter::Move(const FInputActionValue& Value)
 {
-	FVector2D moveValue = Value.Get<FVector2D>();
-	if (Controller)
-	{
-		if (moveValue.X !=0.f)
-		{
-			const FRotator YawRotation(0, GetControlRotation().Yaw,0);
-			const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-			AddMovementInput(ForwardDirection, moveValue.X);
-		}
+    FVector2D moveValue = Value.Get<FVector2D>();
 
-		if (moveValue.Y !=0.f)
-		{
-			const FRotator YawRotation(0.f, GetControlRotation().Yaw,0.f);
-			const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-			AddMovementInput(RightDirection, moveValue.Y);
-		}
-	}
+    if (Controller)
+    {
+
+        if (moveValue.X != 0.f) 
+        {
+            const FRotator YawRotation(0.f, GetControlRotation().Yaw, 0.f);
+            const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+            AddMovementInput(Direction, moveValue.X);
+        }
+
+        if (moveValue.Y != 0.f)
+        {
+            const FRotator YawRotation(0.f, GetControlRotation().Yaw, 0.f);
+            const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+            AddMovementInput(Direction, moveValue.Y);
+        }
+    }
 }
 
 void ABasePlayerCharacter::Interact()
 {
-	if (InteractionComponent)
-	{
-		InteractionComponent->TryInteract();
-	}
+    
+        UE_LOG(LogTemp, Warning, TEXT("KLIKNIĘTO E"));
+        InteractionComponent->TryInteract();
+   
 }
 
 void ABasePlayerCharacter::Attack()
 {
-	// default does nothing
+    // Jeśli mamy broń, wywołaj jej atak
+    if (CurrentWeapon)
+    {
+        CurrentWeapon->Attack();
+    }
 }
 
 void ABasePlayerCharacter::Equip(AWeapon* WeaponToEquip)
 {
-	if (!WeaponToEquip) return;
+    if (!WeaponToEquip) return;
 
-	if (CurrentWeapon)
-	{
-		CurrentWeapon->Destroy();
-	}
+    /*if (CurrentWeapon)
+    {
+        CurrentWeapon->Destroy();
+    }*/
 
-	CurrentWeapon = WeaponToEquip;
-	CurrentWeapon->SetActorHiddenInGame(true);
-	CurrentWeapon->SetActorEnableCollision(false);
+    CurrentWeapon = WeaponToEquip;
 
-	if (GetMesh() && CurrentWeapon && CurrentWeapon->MeshComp)
-	{
-		CurrentWeapon->MeshComp->AttachToComponent(
-			GetMesh(),
-			FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-			WeaponSocketName
-		);
-	}
+    CurrentWeapon->SetOwner(this);
+
+    if (GetMesh() && CurrentWeapon)
+    {
+        
+        CurrentWeapon->MeshComp->SetSimulatePhysics(false);
+        CurrentWeapon->MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        /*CurrentWeapon->AttachToComponent(
+            GetMesh(),
+            FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+            WeaponSocketName
+        );*/
+    }
 }

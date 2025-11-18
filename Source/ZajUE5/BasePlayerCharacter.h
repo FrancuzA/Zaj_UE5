@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,7 +5,6 @@
 #include "InputAction.h"
 #include "InputMappingContext.h"
 #include "BasePlayerCharacter.generated.h"
-
 
 class AWeapon;
 class UCameraComponent;
@@ -17,65 +14,74 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
-UCLASS()
+UCLASS(Blueprintable)
 class ZAJUE5_API ABasePlayerCharacter : public ABaseCharacter
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
+
 public:
-	UInteractionComponent* GetInteractionComponent() { return InteractionComponent; }
+    ABasePlayerCharacter();
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+    // DODAJ TE FUNKCJE:
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	FVector GetCameraLocation();
-	FVector GetCameraForwardVector();
+    UFUNCTION(BlueprintCallable)
+    FVector GetCameraLocation();
 
-	// Equip function declared so Weapon::PickUp can call it
-	UFUNCTION()
-	void Equip(AWeapon* WeaponToEquip);
-	void Interact();
-	virtual void Attack();
+    UFUNCTION(BlueprintCallable)
+    FVector GetCameraForwardVector();
+
+    UFUNCTION(BlueprintCallable)
+    void Equip(AWeapon* WeaponToEquip);
+
+    UFUNCTION(BlueprintCallable)
+    void Interact();
+
+    UFUNCTION(BlueprintCallable)
+    virtual void Attack();
+
 
 protected:
-	ABasePlayerCharacter();
+    virtual void BeginPlay() override;
 
-	/** Input mapping context for this player */
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputMappingContext* MappingContext;
+    /** Input mapping context for this player */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+    UInputMappingContext* MappingContext;
 
-	/** Input actions */
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* MoveAction;
+    /** Input actions */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+    UInputAction* MoveAction;
 
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* LookAction;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+    UInputAction* LookAction;
 
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* InteractAction;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+    UInputAction* InteractAction;
 
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* AttackAction;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+    UInputAction* JumpAction;
 
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	USpringArmComponent* CameraBoom;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UInteractionComponent* InteractionComponent;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+    UInputAction* AttackAction;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UCameraComponent* ViewCamera;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    USpringArmComponent* CameraBoom;
 
-	
-	UPROPERTY()
-	AWeapon* CurrentWeapon = nullptr;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UInteractionComponent* InteractionComponent;
 
-	/** Socket name to attach weapon to */
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	FName WeaponSocketName = NAME_None;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UCameraComponent* ViewCamera;
 
-	void Move(const FInputActionValue& value);
-	void Look(const FInputActionValue& value);
-	
-	virtual void BeginPlay() override;
-	
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+    AWeapon* CurrentWeapon = nullptr;
+
+    /** Socket name to attach weapon to */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    FName WeaponSocketName = "WeaponSocket";
+
+private:
+    // DODAJ TE FUNKCJE PRYWATNE:
+    void Move(const FInputActionValue& value);
+    void Look(const FInputActionValue& value);
 };

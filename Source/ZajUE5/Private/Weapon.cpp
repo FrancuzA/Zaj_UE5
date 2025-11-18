@@ -1,26 +1,44 @@
 #include "Weapon.h"
-#include "BaseCharacter.h" 
+#include "BasePlayerCharacter.h"
 
-
-void AWeapon::Interact_Implementation(AActor* OuterActor) 
+AWeapon::AWeapon()
 {
-	Super::Interact_Implementation(OuterActor);
-	Equip(OuterActor);
+   
 }
 
-void AWeapon::Equip(AActor* OuterActor)
+void AWeapon::Interact_Implementation(AActor* Interactor)
 {
-	ABaseCharacter* BaseChar = Cast<ABaseCharacter>(OuterActor);
-	if (BaseChar)
-	{
-		AttachToSocket(BaseChar->GetMesh(), MainSocketName);
-		BaseChar->SetCurrentWeapon(this);
-	}
+    Super::Interact_Implementation(Interactor);
+
+    ABasePlayerCharacter* Player = Cast<ABasePlayerCharacter>(Interactor);
+    if (Player)
+    {
+        Equip(Player);
+    }
 }
 
-void AWeapon:: AttachToSocket(USceneComponent* InParent, const FName& InSocketName)
+void AWeapon::Equip(ABasePlayerCharacter* Equipper)
 {
-	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-	TransformRules.ScaleRule = EAttachmentRule::KeepWorld;
-	RootComponent->AttachToComponent(InParent, TransformRules, InSocketName);
+   /* ABasePlayerCharacter* Player = Cast<ABasePlayerCharacter>(Equipper);*/
+    
+        AttachToSocket(Equipper->GetMesh(),WeaponSocketName);
+        Equipper->Equip(this);
+    
+}
+
+// POPRAWIONA IMPLEMENTACJA
+void AWeapon::AttachToSocket(USceneComponent* InParent, const FName& InSocketName)
+{
+    if (InParent && MeshComp)
+    {
+        FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+        AttachmentRules.ScaleRule = EAttachmentRule::KeepWorld;
+
+        RootComponent->AttachToComponent(InParent, AttachmentRules, InSocketName);
+    }
+}
+
+void AWeapon::Attack_Implementation()
+{
+    UE_LOG(LogTemp, Warning, TEXT("Weapon Attack!"));
 }

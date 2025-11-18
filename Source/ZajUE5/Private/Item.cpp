@@ -1,18 +1,13 @@
 #include "Item.h"
-#include "InteractionComponent.h"      // komponent
 #include "Components/StaticMeshComponent.h"
-
+#include "BasePlayerCharacter.h"
 
 AItem::AItem()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	// Utwórz mesh i ustaw jako root
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(MeshComp);
-
-	// Dodaj komponent interakcji
-	InteractionComp = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractionComp"));
 }
 
 void AItem::BeginPlay()
@@ -20,14 +15,18 @@ void AItem::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AItem::Interact_Implementation(AActor* OuterActor)
+void AItem::Interact_Implementation(AActor* Interactor)
 {
-	ItemMesh->SetSimulatePhysics(false);
-	SetOwner(OuterActor);
+	ABasePlayerCharacter* Player = Cast<ABasePlayerCharacter>(Interactor);
+	if (Player)
+	{
+		PickUp(Player);
+	}
 }
 
-void AItem::PickUp(ABasePlayerCharacter* ByCharacter)
+void AItem::PickUp_Implementation(ABasePlayerCharacter* ByCharacter)
 {
-	// Domyślnie: zniszcz przedmiot po podniesieniu
-	Destroy();
+	// Podstawowa implementacja - ukryj przedmiot
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
 }
