@@ -115,10 +115,25 @@ void ABasePlayerCharacter::Interact()
 
 void ABasePlayerCharacter::Attack()
 {
-    // Jeśli mamy broń, wywołaj jej atak
+    if (CurrentWeapon && AttackMontage && GetMesh() && GetMesh()->GetAnimInstance())
+    {
+        GetMesh()->GetAnimInstance()->Montage_Play(AttackMontage);
+    }
+}
+
+void ABasePlayerCharacter::EnableWeaponCollision()
+{
     if (CurrentWeapon)
     {
-        CurrentWeapon->Attack();
+        CurrentWeapon->EnableWeaponCollision();
+    }
+}
+
+void ABasePlayerCharacter::DisableWeaponCollision()
+{
+    if (CurrentWeapon)
+    {
+        CurrentWeapon->DisableWeaponCollision();
     }
 }
 

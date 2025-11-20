@@ -37,3 +37,8 @@ void ABaseCharacter::SetCurrentWeapon(AActor* OuterActor)
 
 }
 
+void ABaseCharacter::Attack()
+{
+
+}
+

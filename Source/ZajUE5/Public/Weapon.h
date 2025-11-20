@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/CapsuleComponent.h"
 #include "Item.h"
 #include "Weapon.generated.h"
 
@@ -11,6 +12,18 @@ class ZAJUE5_API AWeapon : public AItem
 
 public:
     AWeapon();
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    class USceneComponent* SceneRoot;
+
+    UFUNCTION(BlueprintCallable)
+    void EnableWeaponCollision();
+
+    UFUNCTION(BlueprintCallable)
+    void DisableWeaponCollision();
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UCapsuleComponent* CollisionCapsule;
 
     // Override interakcji
     virtual void Interact_Implementation(AActor* Interactor) override;
@@ -23,12 +36,21 @@ public:
     UFUNCTION(BlueprintCallable)
     void AttachToSocket(USceneComponent* InParent, const FName& InSocketName);
 
-    // Funkcja ataku
-    UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-    void Attack();
-    virtual void Attack_Implementation();
+    
+    virtual void PickUp_Implementation(ABasePlayerCharacter* ByCharacter) override;
 
     // Socket dla broni
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
     FName WeaponSocketName = FName("WeaponSocket");
+
+protected:
+    UFUNCTION()
+    void OnCollisionCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+        bool bFromSweep, const FHitResult& SweepResult);
+
+    TArray<AActor*> AlreadyHitActors;
+
+    // Funkcja do znalezienia Capsule Component w BeginPlay
+    virtual void BeginPlay() override;
 };

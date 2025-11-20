@@ -4,6 +4,7 @@
 #include "BaseCharacter.h"
 #include "InputAction.h"
 #include "InputMappingContext.h"
+#include "Animation/AnimMontage.h"
 #include "BasePlayerCharacter.generated.h"
 
 class AWeapon;
@@ -37,9 +38,16 @@ public:
     UFUNCTION(BlueprintCallable)
     void Interact();
 
-    UFUNCTION(BlueprintCallable)
-    virtual void Attack();
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+    UAnimMontage* AttackMontage;
 
+    UFUNCTION(BlueprintCallable, Category = "Combat")
+    void EnableWeaponCollision();
+
+    UFUNCTION(BlueprintCallable, Category = "Combat")
+    void DisableWeaponCollision();
+
+    virtual void Attack() override;
 
 protected:
     virtual void BeginPlay() override;

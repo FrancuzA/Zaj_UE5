@@ -18,9 +18,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	
-	
-
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* MeshComp;
