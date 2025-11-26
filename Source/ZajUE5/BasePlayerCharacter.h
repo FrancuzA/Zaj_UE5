@@ -5,6 +5,8 @@
 #include "InputAction.h"
 #include "InputMappingContext.h"
 #include "Animation/AnimMontage.h"
+#include "CombatInterface.h"
+#include "AttributesComponent.h"
 #include "BasePlayerCharacter.generated.h"
 
 class AWeapon;
@@ -47,7 +49,35 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Combat")
     void DisableWeaponCollision();
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UAttributesComponent* Attributes;
+
+    virtual void GetHit_Implementation(FVector HitLocation);
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+    float StaminaCost_Attack = 20.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+    float StaminaCost_Jump = 10.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+    float StaminaCost_Sprint = 5.0f;
+
+    UFUNCTION(BlueprintCallable, Category = "Stamina")
+    bool CanAttack() const;
+
+    bool CanJump() const;
+
+    // Override functions
     virtual void Attack() override;
+    virtual void Jump() override;
+
+    // Sprint
+    UFUNCTION(BlueprintCallable)
+    void StartSprint();
+
+    UFUNCTION(BlueprintCallable)
+    void StopSprint();
 
 protected:
     virtual void BeginPlay() override;
@@ -89,7 +119,18 @@ protected:
     FName WeaponSocketName = "WeaponSocket";
 
 private:
-    // DODAJ TE FUNKCJE PRYWATNE:
+    
     void Move(const FInputActionValue& value);
     void Look(const FInputActionValue& value);
+
+    UFUNCTION()
+    void OnHealthChanged(float CurrentHealth, float MaxHealth);
+
+    UFUNCTION()
+    void OnStaminaChanged(float CurrentStamina, float MaxStamina);
+
+    UFUNCTION()
+    void OnDeath();
+
+    bool bIsSprinting = false;
 };

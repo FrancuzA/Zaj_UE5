@@ -1,6 +1,7 @@
 #include "Weapon.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "AttributesComponent.h"
 #include "BasePlayerCharacter.h"
 
 AWeapon::AWeapon()
@@ -59,40 +60,36 @@ void AWeapon::OnCollisionCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComp
 {
     if (!CollisionCapsule) return;
 
+    // Unikaj trafienia samego siebie i właściciela
     if (OtherActor == GetOwner() || OtherActor == this || AlreadyHitActors.Contains(OtherActor))
         return;
 
     AlreadyHitActors.Add(OtherActor);
 
-    FVector Start = CollisionCapsule->GetComponentLocation();
-    FVector End = Start;
-    float Radius = CollisionCapsule->GetScaledCapsuleRadius();
-    float HalfHeight = CollisionCapsule->GetScaledCapsuleHalfHeight();
-
-    FHitResult HitResult;
-    TArray<AActor*> ActorsToIgnore;
-    ActorsToIgnore.Add(GetOwner());
-    ActorsToIgnore.Add(this);
-
-    // Użyj SphereTrace zamiast BoxTrace dla Capsule Component
-    UKismetSystemLibrary::SphereTraceSingle(
-        this,
-        Start,
-        End,
-        Radius,
-        UEngineTypes::ConvertToTraceType(ECC_Visibility),
-        false,
-        ActorsToIgnore,
-        EDrawDebugTrace::ForDuration,
-        HitResult,
-        true
-    );
-
-    if (HitResult.bBlockingHit)
+    // Sprawdź czy aktor implementuje CombatInterface
+    if (OtherActor->Implements<UCombatInterface>())
     {
-        UE_LOG(LogTemp, Warning, TEXT("Weapon hit: %s at location: %s"),
-            *OtherActor->GetName(), *HitResult.Location.ToString());
+        // Wywołaj GetHit na trafionym akrorze
+        ICombatInterface::Execute_GetHit(OtherActor, SweepResult.Location);
+
+        // Zadaj obrażenia przez AttributesComponent jeśli istnieje
+        UAttributesComponent* Attributes = OtherActor->FindComponentByClass<UAttributesComponent>();
+        if (Attributes && Attributes->IsAlive())
+        {
+            Attributes->ApplyDamage(Damage);
+            UE_LOG(LogTemp, Warning, TEXT("Applied %f damage to %s"), Damage, *OtherActor->GetName());
+
+            // Jeśli cel nie żyje po obrażeniach
+            if (!Attributes->IsAlive())
+            {
+                UE_LOG(LogTemp, Warning, TEXT("%s has been defeated!"), *OtherActor->GetName());
+            }
+        }
     }
+
+    // Dla celów debugowania - pokaż punkt trafienia
+    UE_LOG(LogTemp, Warning, TEXT("Weapon hit: %s at location: %s"),
+        *OtherActor->GetName(), *SweepResult.Location.ToString());
 }
 
 void AWeapon::Interact_Implementation(AActor* Interactor)
@@ -120,10 +117,29 @@ void AWeapon::AttachToSocket(USceneComponent* InParent, const FName& InSocketNam
 {
     if (InParent && MeshComp)
     {
-        FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
-        AttachmentRules.ScaleRule = EAttachmentRule::KeepWorld;
+        FVector CurrentScale = MeshComp->GetComponentScale();
+        // Odłącz
+        MeshComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 
-        RootComponent->AttachToComponent(InParent, AttachmentRules, InSocketName);
+        // Ręcznie ustaw transformację
+        FTransform SocketTransform = InParent->GetSocketTransform(InSocketName);
+        SocketTransform.SetRotation(FQuat::Identity); // Resetuj rotację
+
+        MeshComp->SetWorldTransform(SocketTransform);
+
+        // Attach z KeepWorld
+        FAttachmentTransformRules AttachmentRules(
+            EAttachmentRule::SnapToTarget,
+            EAttachmentRule::SnapToTarget,
+            EAttachmentRule::KeepWorld,
+            false
+        );
+
+        MeshComp->AttachToComponent(InParent, AttachmentRules, InSocketName);
+
+        MeshComp->SetWorldScale3D(CurrentScale);
+
+        UE_LOG(LogTemp, Warning, TEXT("MeshComp directly attached with reset rotation"));
     }
 }
 

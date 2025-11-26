@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PawnState.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
@@ -17,9 +18,18 @@ public:
 
 	virtual void Attack();
 
+	UFUNCTION(BlueprintCallable, Category = "State")
+		EPawnState GetCurrentState() const { return CurrentState; }
+
+	UFUNCTION(BlueprintCallable, Category = "State")
+	void SetCurrentState(EPawnState NewState) { CurrentState = NewState; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State")
+	EPawnState CurrentState = EPawnState::Idle;
 
 public:	
 	// Called every frame
