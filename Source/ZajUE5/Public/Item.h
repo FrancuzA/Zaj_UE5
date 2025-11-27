@@ -20,6 +20,8 @@ protected:
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class USceneComponent* SceneRoot;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* MeshComp;
 	// Implementacja interfejsu
 	virtual void Interact_Implementation(AActor* Interactor) override;

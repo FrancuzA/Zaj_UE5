@@ -13,8 +13,7 @@ class ZAJUE5_API AWeapon : public AItem
 public:
     AWeapon();
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    class USceneComponent* SceneRoot;
+
 
     UFUNCTION(BlueprintCallable)
     void EnableWeaponCollision();

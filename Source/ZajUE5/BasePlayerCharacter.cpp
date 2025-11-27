@@ -284,11 +284,11 @@ void ABasePlayerCharacter::Equip(AWeapon* WeaponToEquip)
         UE_LOG(LogTemp, Warning, TEXT("Before attach - Weapon location: %s"),
             *CurrentWeapon->GetActorLocation().ToString());
 
-        CurrentWeapon->MeshComp->SetSimulatePhysics(false);
-        CurrentWeapon->MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        CurrentWeapon->AttachToSocket(GetMesh(), WeaponSocketName);
+        //CurrentWeapon->MeshComp->SetSimulatePhysics(false);
+       // CurrentWeapon->MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+       // CurrentWeapon->AttachToSocket(GetMesh(), WeaponSocketName);
 
-        CurrentWeapon->GetRootComponent()->SetWorldScale3D(FVector(0.15f));
+       // CurrentWeapon->GetRootComponent()->SetWorldScale3D(FVector(0.15f));
         // Debug po attach
         UE_LOG(LogTemp, Warning, TEXT("After attach - Weapon location: %s"),
             *CurrentWeapon->GetActorLocation().ToString());

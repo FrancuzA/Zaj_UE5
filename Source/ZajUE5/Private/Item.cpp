@@ -5,9 +5,10 @@
 AItem::AItem()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
+	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	SetRootComponent(MeshComp);
+	MeshComp->SetupAttachment(SceneRoot);
+	SetRootComponent(SceneRoot);
 }
 
 void AItem::BeginPlay()
@@ -28,5 +29,5 @@ void AItem::PickUp_Implementation(ABasePlayerCharacter* ByCharacter)
 {
 	// Podstawowa implementacja - ukryj przedmiot
 	SetActorHiddenInGame(true);
-	SetActorEnableCollision(false);
+	//SetActorEnableCollision(false);
 }

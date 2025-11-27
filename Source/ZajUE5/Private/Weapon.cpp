@@ -6,10 +6,11 @@
 
 AWeapon::AWeapon()
 {
-    SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
-    RootComponent = SceneRoot;
-
-    CollisionCapsule = nullptr;
+   
+    CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionCapsule"));
+    CollisionCapsule->SetupAttachment(SceneRoot);
+    CollisionCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+   
 }
 
 void AWeapon::BeginPlay()
@@ -17,7 +18,7 @@ void AWeapon::BeginPlay()
     Super::BeginPlay();
 
     // Znajdź Capsule Component wśród komponentów aktora
-    CollisionCapsule = FindComponentByClass<UCapsuleComponent>();
+   // CollisionCapsule = FindComponentByClass<UCapsuleComponent>();
 
     if (CollisionCapsule)
     {
@@ -25,7 +26,7 @@ void AWeapon::BeginPlay()
         CollisionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnCollisionCapsuleBeginOverlap);
 
         // Upewnij się, że kolizja jest początkowo wyłączona
-        CollisionCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+      
 
         UE_LOG(LogTemp, Warning, TEXT("Found Capsule Component: %s"), *CollisionCapsule->GetName());
     }
@@ -117,15 +118,15 @@ void AWeapon::AttachToSocket(USceneComponent* InParent, const FName& InSocketNam
 {
     if (InParent && MeshComp)
     {
-        FVector CurrentScale = MeshComp->GetComponentScale();
+      //  FVector CurrentScale = MeshComp->GetComponentScale();
         // Odłącz
-        MeshComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+        //MeshComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 
         // Ręcznie ustaw transformację
-        FTransform SocketTransform = InParent->GetSocketTransform(InSocketName);
-        SocketTransform.SetRotation(FQuat::Identity); // Resetuj rotację
+       // FTransform SocketTransform = InParent->GetSocketTransform(InSocketName);
+        //SocketTransform.SetRotation(FQuat::Identity); // Resetuj rotację
 
-        MeshComp->SetWorldTransform(SocketTransform);
+        //MeshComp->SetWorldTransform(SocketTransform);
 
         // Attach z KeepWorld
         FAttachmentTransformRules AttachmentRules(
@@ -135,9 +136,11 @@ void AWeapon::AttachToSocket(USceneComponent* InParent, const FName& InSocketNam
             false
         );
 
-        MeshComp->AttachToComponent(InParent, AttachmentRules, InSocketName);
+       // MeshComp->AttachToComponent(InParent, AttachmentRules, InSocketName);
+        SceneRoot->AttachToComponent(InParent,AttachmentRules,InSocketName);
 
-        MeshComp->SetWorldScale3D(CurrentScale);
+      //  AttachToComponent(InParent,AttachmentRules,InSocketName);
+      //  MeshComp->SetWorldScale3D(CurrentScale);
 
         UE_LOG(LogTemp, Warning, TEXT("MeshComp directly attached with reset rotation"));
     }
@@ -146,5 +149,6 @@ void AWeapon::AttachToSocket(USceneComponent* InParent, const FName& InSocketNam
 
 void AWeapon::PickUp_Implementation(ABasePlayerCharacter* ByCharacter)
 {
-    SetActorEnableCollision(false);
+   // SetActorEnableCollision(false);
+    MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
