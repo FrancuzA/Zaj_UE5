@@ -201,10 +201,7 @@ void ABasePlayerCharacter::OnDeath()
 
 void ABasePlayerCharacter::Interact()
 {
-    
-        //UE_LOG(LogTemp, Warning, TEXT("KLIKNIĘTO E"));
         InteractionComponent->TryInteract();
-   
 }
 
 void ABasePlayerCharacter::Attack()
@@ -253,11 +250,10 @@ void ABasePlayerCharacter::Equip(AWeapon* WeaponToEquip)
     // Debug: sprawdź czy socket istnieje
     if (GetMesh()->DoesSocketExist(WeaponSocketName))
     {
-        UE_LOG(LogTemp, Warning, TEXT("Socket %s exists on mesh!"), *WeaponSocketName.ToString());
+       
 
         // Sprawdź transformację socketu
         FTransform SocketTransform = GetMesh()->GetSocketTransform(WeaponSocketName);
-        UE_LOG(LogTemp, Warning, TEXT("Socket transform - Location: %s, Rotation: %s"),
             *SocketTransform.GetLocation().ToString(),
             *SocketTransform.GetRotation().Rotator().ToString());
     }
@@ -277,22 +273,6 @@ void ABasePlayerCharacter::Equip(AWeapon* WeaponToEquip)
 
     CurrentWeapon = WeaponToEquip;
     CurrentWeapon->SetOwner(this);
-
-    if (GetMesh() && CurrentWeapon)
-    {
-        // Debug przed attach
-        UE_LOG(LogTemp, Warning, TEXT("Before attach - Weapon location: %s"),
-            *CurrentWeapon->GetActorLocation().ToString());
-
-        //CurrentWeapon->MeshComp->SetSimulatePhysics(false);
-       // CurrentWeapon->MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-       // CurrentWeapon->AttachToSocket(GetMesh(), WeaponSocketName);
-
-       // CurrentWeapon->GetRootComponent()->SetWorldScale3D(FVector(0.15f));
-        // Debug po attach
-        UE_LOG(LogTemp, Warning, TEXT("After attach - Weapon location: %s"),
-            *CurrentWeapon->GetActorLocation().ToString());
-    }
 }
 
 void ABasePlayerCharacter::GetHit_Implementation(FVector HitLocation)
