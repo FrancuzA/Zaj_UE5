@@ -5,6 +5,8 @@
 #include "CombatInterface.h"
 #include "AttributesComponent.h"
 #include "PawnState.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "BaseEnemyCharacter.generated.h"
 
 UCLASS()
@@ -38,6 +40,21 @@ public:
 	UFUNCTION()
 	void OnEnemyDeath();
 
+	UFUNCTION(BlueprintCallable, Category = "AI")
+	void SetPatrolPoints(const TArray<FVector>& Points);
+
+	UFUNCTION(BlueprintCallable, Category = "AI")
+	FVector GetNextPatrolPoint();
+
+
+	UFUNCTION(BlueprintCallable, Category = "AI Combat")
+	float GetAttackRange() const { return AttackRange; }
+
+	UFUNCTION(BlueprintCallable, Category = "AI Combat")
+	bool IsInAttackRange() const;
+
+
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -55,4 +72,14 @@ protected:
 	// Dodaj funkcję OnDeath, która będzie wywołana przez delegat
 	UFUNCTION()
 	void OnDeath();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	TArray<FVector> PatrolPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	int32 CurrentPatrolIndex = 0;
+
+	// Reference to AI Controller
+	UPROPERTY()
+	class AEnemyAIController* EnemyAIController;
 };

@@ -254,20 +254,16 @@ void ABasePlayerCharacter::Equip(AWeapon* WeaponToEquip)
 
         // Sprawdź transformację socketu
         FTransform SocketTransform = GetMesh()->GetSocketTransform(WeaponSocketName);
-            *SocketTransform.GetLocation().ToString(),
-            *SocketTransform.GetRotation().Rotator().ToString());
+           
     }
     else
     {
-        UE_LOG(LogTemp, Error, TEXT("Socket %s NOT FOUND on mesh!"), *WeaponSocketName.ToString());
+       
 
         // Wypisz wszystkie dostępne sockety
         TArray<FName> SocketNames = GetMesh()->GetAllSocketNames();
         UE_LOG(LogTemp, Warning, TEXT("Available sockets:"));
-        for (const FName& SocketName : SocketNames)
-        {
-            UE_LOG(LogTemp, Warning, TEXT(" - %s"), *SocketName.ToString());
-        }
+        
         return;
     }
 
@@ -277,8 +273,7 @@ void ABasePlayerCharacter::Equip(AWeapon* WeaponToEquip)
 
 void ABasePlayerCharacter::GetHit_Implementation(FVector HitLocation)
 {
-    // Implementacja reakcji gracza na trafienie
-    UE_LOG(LogTemp, Warning, TEXT("Player hit at location: %s"), *HitLocation.ToString());
+    
 
     if (Attributes)
     {

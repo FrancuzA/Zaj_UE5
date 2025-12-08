@@ -2,6 +2,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "BasePlayerCharacter.h"
+#include "EnemyAIController.h"
 #include "TimerManager.h" // DODAJ ten include
 
 ABaseEnemyCharacter::ABaseEnemyCharacter()
@@ -12,6 +13,8 @@ ABaseEnemyCharacter::ABaseEnemyCharacter()
 void ABaseEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	EnemyAIController = Cast<AEnemyAIController>(GetController());
 
 	// Rozpocznij sprawdzanie ataku
 	if (Attributes)
@@ -37,7 +40,10 @@ void ABaseEnemyCharacter::Attack()
 
 bool ABaseEnemyCharacter::CanAttack() const
 {
-	if (GetCurrentState() != EPawnState::Idle && GetCurrentState() != EPawnState::InCombat)
+	if (GetCurrentState() == EPawnState::Dead || GetCurrentState() == EPawnState::Hit || GetCurrentState() == EPawnState::Exhausted)
+		return false;
+
+	if (!Attributes || !Attributes->CanPayStaminaCost(20.0f)) // Use Attack cost
 		return false;
 
 	// Sprawdź czy gracz jest w zasięgu
@@ -85,6 +91,15 @@ void ABaseEnemyCharacter::GetHit_Implementation(FVector HitLocation)
 
 	SetCurrentState(EPawnState::Hit);
 
+	// Update blackboard
+	if (EnemyAIController && EnemyAIController->BlackboardComponent)
+	{
+		EnemyAIController->BlackboardComponent->SetValueAsEnum(
+			EnemyAIController->PawnStateKey,
+			(uint8)GetCurrentState()
+		);
+	}
+
 	// Odtwórz dźwięk
 	if (HitSound)
 	{
@@ -116,10 +131,38 @@ void ABaseEnemyCharacter::OnEnemyDeath()
 	SetCurrentState(EPawnState::Dead);
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 
-	// Disable collision and physics
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->SetSimulatePhysics(true);
+	// Update blackboard
+	if (EnemyAIController && EnemyAIController->BlackboardComponent)
+	{
+		EnemyAIController->BlackboardComponent->SetValueAsBool(
+			EnemyAIController->IsDeadKey,
+			true
+		);
+	}
 
-	// Destroy after delay
-	SetLifeSpan(5.0f);
+	// Disable collision and movement
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->DisableMovement();
+}
+
+void ABaseEnemyCharacter::SetPatrolPoints(const TArray<FVector>& Points)
+{
+	PatrolPoints = Points;
+}
+
+FVector ABaseEnemyCharacter::GetNextPatrolPoint()
+{
+	if (PatrolPoints.Num() == 0) return GetActorLocation();
+
+	CurrentPatrolIndex = (CurrentPatrolIndex + 1) % PatrolPoints.Num();
+	return PatrolPoints[CurrentPatrolIndex];
+}
+
+bool ABaseEnemyCharacter::IsInAttackRange() const
+{
+	ABasePlayerCharacter* Player = Cast<ABasePlayerCharacter>(UGameplayStatics::GetPlayerPawn(this, 0));
+	if (!Player) return false;
+
+	float Distance = FVector::Distance(GetActorLocation(), Player->GetActorLocation());
+	return Distance <= AttackRange;
 }
