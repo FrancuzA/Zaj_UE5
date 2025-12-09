@@ -35,6 +35,8 @@ public:
     UFUNCTION(BlueprintCallable)
     void AttachToSocket(USceneComponent* InParent, const FName& InSocketName);
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    class USceneComponent* WeaponRoot;
     
     virtual void PickUp_Implementation(ABasePlayerCharacter* ByCharacter) override;
 

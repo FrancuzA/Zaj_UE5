@@ -37,6 +37,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* HitMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* AttackMontage;
+
 	UFUNCTION()
 	void OnEnemyDeath();
 
@@ -53,7 +56,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AI Combat")
 	bool IsInAttackRange() const;
 
+	UFUNCTION(BlueprintCallable)
+	void Equip(AWeapon* WeaponToEquip);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	AWeapon* CurrentWeapon;
+
+	/** Socket name to attach weapon to */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	FName WeaponSocketName = "WeaponSocket";
+
+	UFUNCTION(BlueprintCallable)
+	void AttachToSocket(USceneComponent* InParent, const FName& InSocketName);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class USceneComponent* WeaponRoot;
 
 protected:
 	virtual void BeginPlay() override;

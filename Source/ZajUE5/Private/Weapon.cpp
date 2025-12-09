@@ -10,7 +10,7 @@ AWeapon::AWeapon()
     CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionCapsule"));
     CollisionCapsule->SetupAttachment(SceneRoot);
     CollisionCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-   
+    WeaponRoot = SceneRoot;
 }
 
 void AWeapon::BeginPlay()

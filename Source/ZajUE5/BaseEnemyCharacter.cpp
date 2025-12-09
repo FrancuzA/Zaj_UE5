@@ -33,7 +33,7 @@ void ABaseEnemyCharacter::Attack()
 
 	// Tutaj implementacja ataku przeciwnika
 	UE_LOG(LogTemp, Warning, TEXT("Enemy attacking!"));
-
+	GetMesh()->GetAnimInstance()->Montage_Play(AttackMontage);
 	// Zaplanuj następny atak
 	GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &ABaseEnemyCharacter::TryAttack, AttackCooldown, false);
 }
@@ -165,4 +165,46 @@ bool ABaseEnemyCharacter::IsInAttackRange() const
 
 	float Distance = FVector::Distance(GetActorLocation(), Player->GetActorLocation());
 	return Distance <= AttackRange;
+}
+
+void ABaseEnemyCharacter::Equip(AWeapon* WeaponToEquip)
+{
+	if (!WeaponToEquip) return;
+
+	CurrentWeapon = WeaponToEquip;
+	CurrentWeapon->SetOwner(this);
+
+	// Debug: sprawdź czy socket istnieje
+	if (GetMesh()->DoesSocketExist(WeaponSocketName))
+	{
+		// Sprawdź transformację socketu
+		FTransform SocketTransform = GetMesh()->GetSocketTransform(WeaponSocketName);
+		AttachToSocket(GetMesh(), WeaponSocketName);
+
+	}
+	else
+	{
+		// Wypisz wszystkie dostępne sockety
+		TArray<FName> SocketNames = GetMesh()->GetAllSocketNames();
+		UE_LOG(LogTemp, Warning, TEXT("Available sockets:"));
+		return;
+	}
+
+	CurrentWeapon = WeaponToEquip;
+	CurrentWeapon->SetOwner(this);
+}
+
+void ABaseEnemyCharacter::AttachToSocket(USceneComponent* InParent, const FName& InSocketName)
+{
+		FAttachmentTransformRules AttachmentRules(
+			EAttachmentRule::SnapToTarget,
+			EAttachmentRule::SnapToTarget,
+			EAttachmentRule::KeepWorld,
+			false
+		);
+
+		CurrentWeapon->WeaponRoot->AttachToComponent(InParent, AttachmentRules, InSocketName);
+
+		UE_LOG(LogTemp, Warning, TEXT("MeshComp directly attached with reset rotation"));
+	
 }
