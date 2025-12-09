@@ -4,6 +4,7 @@
 #include "BasePlayerCharacter.h"
 #include "EnemyAIController.h"
 #include "TimerManager.h" // DODAJ ten include
+#include "Weapon.h"
 
 ABaseEnemyCharacter::ABaseEnemyCharacter()
 {
@@ -21,7 +22,11 @@ void ABaseEnemyCharacter::BeginPlay()
 	{
 		Attributes->OnDeath.AddDynamic(this, &ABaseEnemyCharacter::OnDeath);
 	}
-
+	FActorSpawnParameters spawnParameters;
+	spawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	CurrentWeapon = GetWorld()->SpawnActor<AWeapon>(CurrentWeaponClass,GetActorLocation(),GetActorRotation());
+	//CurrentWeapon->Equip(this);
 	GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &ABaseEnemyCharacter::TryAttack, 1.0f, true);
 }
 

@@ -59,9 +59,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Equip(AWeapon* WeaponToEquip);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	UPROPERTY()
 	AWeapon* CurrentWeapon;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	TSubclassOf<AWeapon> CurrentWeaponClass;
+	
 	/** Socket name to attach weapon to */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	FName WeaponSocketName = "WeaponSocket";

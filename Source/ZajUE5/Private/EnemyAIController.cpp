@@ -10,6 +10,7 @@
 #include "BasePlayerCharacter.h"
 #include "BaseEnemyCharacter.h"
 #include "AttributesComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 const FName AEnemyAIController::TargetActorKey = TEXT("TargetActor");
 const FName AEnemyAIController::LastKnownLocationKey = TEXT("LastKnownPlayerLocation");
